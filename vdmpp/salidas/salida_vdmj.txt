@@ -1,0 +1,32 @@
+>> CP01_LecturaExtrema
+<Extremo>
+>> CP02_LecturaModerada
+mk_(5, 0)
+>> CP03_EnElUmbral
+<MuyAlto>
+>> CP04_BajoElUmbral
+0
+>> CP05_FueraDeRango
+0
+>> CP06_JornadaArequipa
+mk_([<MuyAlto>, <Extremo>, <Extremo>], true)
+>> CP07_CicloDeAlerta
+<Atendida>
+>> CP08_ConsultaPorZona
+mk_({mk_token("D1"), mk_token("D3")}, {2})
+>> CP09_SinLecturaConIndice
+Execution: Error 4079: Type invariant violated by mk_LecturaUV arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 14:20
+>> CP10_OperativoFueraDeRango
+Execution: Error 4079: Type invariant violated by mk_LecturaUV arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 14:20
+>> CP11_SensorNoInstalado
+Execution: Error 4071: Precondition failure: pre_RegistrarLectura in 'DispositivoUV' (DispositivoUV.vdmpp) at line 24:32
+>> CP12_LecturaDesordenada
+Execution: Error 4071: Precondition failure: pre_RegistrarLectura in 'DispositivoUV' (DispositivoUV.vdmpp) at line 24:32
+>> CP13_AlertaFalsa
+Execution: Error 4079: Type invariant violated by mk_Alerta arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 107:12
+>> CP14_NivelMalClasificado
+Execution: Error 4079: Type invariant violated by mk_Alerta arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 111:12
+>> CP15_AtenderSinEmitir
+Execution: Error 4071: Precondition failure: pre_AtenderAlerta in 'CentralMonitoreo' (CentralMonitoreo.vdmpp) at line 58:28
+>> CP16_DispositivoDuplicado
+Execution: Error 4071: Precondition failure: pre_RegistrarDispositivo in 'CentralMonitoreo' (CentralMonitoreo.vdmpp) at line 28:17

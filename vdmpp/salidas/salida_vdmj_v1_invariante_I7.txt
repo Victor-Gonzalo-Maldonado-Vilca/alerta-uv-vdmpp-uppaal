@@ -1,0 +1,72 @@
+Parsed 4 classes in 0.127 secs. No syntax errors
+Type checked 4 classes in 0.191 secs. No type errors
+Initialized 4 classes in 0.378 secs. No init errors
+Interpreter started
+> Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> new PruebasAlertaUV().CP02_LecturaModerada() = 0
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> new PruebasAlertaUV().CP04_BajoElUmbral() = 0
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> new PruebasAlertaUV().CP05_FueraDeRango() = 0
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4079: Type invariant violated by mk_LecturaUV arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 14:20
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4079: Type invariant violated by mk_LecturaUV arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 14:20
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4071: Precondition failure: pre_RegistrarLectura in 'DispositivoUV' (DispositivoUV.vdmpp) at line 24:32
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4079: Type invariant violated by mk_Alerta arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 107:12
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4079: Type invariant violated by mk_Alerta arguments in 'PruebasAlertaUV' (PruebasAlertaUV.vdmpp) at line 111:12
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4071: Precondition failure: pre_RegistrarDispositivo in 'CentralMonitoreo' (CentralMonitoreo.vdmpp) at line 28:17
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Bad command. Try 'help'
+--
+Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+23:      historial := historial ^ [l]
+MainThread> Runtime: Error 4130: Instance invariant violated: inv_CentralMonitoreo in 'DispositivoUV' (DispositivoUV.vdmpp) at line 23:5
+> Bye
