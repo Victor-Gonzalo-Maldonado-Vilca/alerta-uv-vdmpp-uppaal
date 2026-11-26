@@ -1,0 +1,98 @@
+[2K
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula: A[] Central.operativo imply (lec_indice >= 0 && lec_indice <= INDICE_MAX)
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 94 ms
+ -- Virtual memory used : 74440 KiB
+ -- Resident memory used : 24324 KiB
+[2K
+Verifying formula 2 at /nta/queries/query[2]/formula
+ -- Formula: A[] forall (i : id_t) (!Alerta(i).inicio imply (hist_est[alerta_lect[i]] == OPERATIVO && hist_ind[alerta_lect[i]] >= UMBRAL_ALERTA && alerta_nivel[i] == clasificar(hist_ind[alerta_lect[i]]) && alerta_nivel[i] >= MUY_ALTO))
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 125 ms
+ -- Virtual memory used : 75368 KiB
+ -- Resident memory used : 24796 KiB
+[2K
+Verifying formula 3 at /nta/queries/query[3]/formula
+ -- Formula: A[] Central.esperando imply forall (k : lect_t) ((k < n && hist_est[k] == OPERATIVO && hist_ind[k] >= UMBRAL_ALERTA) imply exists (i : id_t) (!Alerta(i).inicio && alerta_lect[i] == k))
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 141 ms
+ -- Virtual memory used : 76500 KiB
+ -- Resident memory used : 25328 KiB
+[2K
+Verifying formula 4 at /nta/queries/query[4]/formula
+ -- Formula: A[] forall (i : id_t) (Alerta(i).Atendida imply emitida[i])
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 109 ms
+ -- Virtual memory used : 77392 KiB
+ -- Resident memory used : 25800 KiB
+[2K
+Verifying formula 5 at /nta/queries/query[5]/formula
+ -- Formula: A[] forall (i : id_t) (Alerta(i).Pendiente imply Alerta(i).x <= T_EMITIR)
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 141 ms
+ -- Virtual memory used : 78300 KiB
+ -- Resident memory used : 26196 KiB
+[2K
+Verifying formula 6 at /nta/queries/query[6]/formula
+ -- Formula: A[] deadlock imply (n == MAX_LECT && Sensor.Fin && Central.esperando && forall (i : id_t) (Alerta(i).inicio || Alerta(i).Atendida))
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 187 ms
+ -- Virtual memory used : 79260 KiB
+ -- Resident memory used : 26688 KiB
+[2K
+Verifying formula 7 at /nta/queries/query[7]/formula
+ -- Formula: E<> Alerta(0).Atendida
+[2K -- Formula is satisfied.
+ -- States stored : 69 states
+ -- States explored : 58 states
+ -- CPU user time used : 0 ms
+ -- Virtual memory used : 79416 KiB
+ -- Resident memory used : 26780 KiB
+[2K
+Verifying formula 8 at /nta/queries/query[8]/formula
+ -- Formula: E<> total == N_ALERTAS
+[2K -- Formula is satisfied.
+ -- States stored : 27120 states
+ -- States explored : 26778 states
+ -- CPU user time used : 63 ms
+ -- Virtual memory used : 77016 KiB
+ -- Resident memory used : 25236 KiB
+[2K
+Verifying formula 9 at /nta/queries/query[9]/formula
+ -- Formula: E[] forall (i : id_t) Alerta(i).inicio
+[2K -- Formula is satisfied.
+ -- States explored : 13 states
+ -- CPU user time used : 0 ms
+ -- Virtual memory used : 77172 KiB
+ -- Resident memory used : 25324 KiB
+[2K
+Verifying formula 10 at /nta/queries/query[10]/formula
+ -- Formula: E<> exists (i : id_t) (!Alerta(i).inicio && hist_est[alerta_lect[i]] == FUERA_DE_RANGO)
+[2K -- Formula is NOT satisfied.
+ -- States stored : 50843 states
+ -- States explored : 62555 states
+ -- CPU user time used : 109 ms
+ -- Virtual memory used : 81168 KiB
+ -- Resident memory used : 27640 KiB
+[2K
+Verifying formula 11 at /nta/queries/query[11]/formula
+ -- Formula: Alerta(0).Pendiente --> Alerta(0).Emitida
+[2K -- Formula is satisfied.
+ -- States stored : 50843 states
+ -- States explored : 63773 states
+ -- CPU user time used : 125 ms
+ -- Virtual memory used : 82348 KiB
+ -- Resident memory used : 28136 KiB
