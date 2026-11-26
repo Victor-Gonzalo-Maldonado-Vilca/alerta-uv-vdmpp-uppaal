@@ -1,0 +1,12 @@
+# Archivos generados por VS Code / Overture
+.vscode/
+.generated/
+*.class
+
+# Python
+__pycache__/
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
