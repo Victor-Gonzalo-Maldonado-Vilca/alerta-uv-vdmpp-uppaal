@@ -1,0 +1,124 @@
+class PruebasAlertaUV
+
+values
+  D1 = mk_token("D1");  D2 = mk_token("D2");  D3 = mk_token("D3");
+  S1 = mk_token("S1");  S2 = mk_token("S2");  S3 = mk_token("S3");
+  CERCADO   = mk_token("Cercado");
+  YANAHUARA = mk_token("Yanahuara");
+
+instance variables
+  c : CentralMonitoreo := new CentralMonitoreo();
+
+functions
+  L: Tipos`SensorId * real * nat * Tipos`EstadoSensor -> Tipos`LecturaUV
+  L(s, i, t, e) == mk_Tipos`LecturaUV(s, i, t, e);
+
+operations
+  -- Escenario común: tres dispositivos en dos zonas de Arequipa
+  Escenario: () ==> ()
+  Escenario() ==
+   (c := new CentralMonitoreo();
+    c.RegistrarDispositivo(new DispositivoUV(D1, CERCADO,   {S1}));
+    c.RegistrarDispositivo(new DispositivoUV(D2, YANAHUARA, {S2}));
+    c.RegistrarDispositivo(new DispositivoUV(D3, CERCADO,   {S3})));
+
+  ---------------------------------------------------------------- éxito
+  public CP01_LecturaExtrema: () ==> Tipos`NivelRiesgo
+  CP01_LecturaExtrema() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 13.5, 100, <Operativo>));
+    return c.NivelAlerta(1));
+
+  public CP02_LecturaModerada: () ==> real * nat
+  CP02_LecturaModerada() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 5.0, 100, <Operativo>));
+    return mk_(c.IndiceActual(D1), c.TotalAlertas()));
+
+  public CP03_EnElUmbral: () ==> Tipos`NivelRiesgo
+  CP03_EnElUmbral() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 8.0, 100, <Operativo>));
+    return c.NivelAlerta(1));
+
+  public CP04_BajoElUmbral: () ==> nat
+  CP04_BajoElUmbral() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 7.9, 100, <Operativo>));
+    return c.TotalAlertas());
+
+  public CP05_FueraDeRango: () ==> nat
+  CP05_FueraDeRango() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 25.0, 100, <FueraDeRango>));
+    c.RecibirLectura(D1, L(S1, 0.0, 101, <SinLectura>));
+    return c.TotalAlertas());
+
+  public CP06_JornadaArequipa: () ==> seq of Tipos`NivelRiesgo * bool
+  CP06_JornadaArequipa() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1,  6.0, 900,  <Operativo>));
+    c.RecibirLectura(D1, L(S1,  9.4, 1000, <Operativo>));
+    c.RecibirLectura(D3, L(S3, 12.1, 1100, <Operativo>));
+    c.RecibirLectura(D2, L(S2, 15.8, 1200, <Operativo>));
+    c.RecibirLectura(D1, L(S1,  3.0, 1600, <Operativo>));
+    return mk_([c.NivelAlerta(i) | i in set {1, ..., c.TotalAlertas()}], c.SinOmisiones()));
+
+  public CP07_CicloDeAlerta: () ==> Tipos`EstadoAlerta
+  CP07_CicloDeAlerta() ==
+   (Escenario();
+    c.RecibirLectura(D2, L(S2, 14.2, 100, <Operativo>));
+    c.EmitirAlerta(1);
+    c.AtenderAlerta(1);
+    return c.EstadoDeAlerta(1));
+
+  public CP08_ConsultaPorZona: () ==> set of Tipos`DispositivoId * set of Tipos`AlertaId
+  CP08_ConsultaPorZona() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 11.0, 100, <Operativo>));
+    c.RecibirLectura(D3, L(S3, 12.5, 100, <Operativo>));
+    c.EmitirAlerta(1);
+    return mk_(c.DispositivosEnZona(CERCADO), c.AlertasPendientes()));
+
+  ---------------------------------------------------------------- fallo
+  public CP09_SinLecturaConIndice: () ==> ()
+  CP09_SinLecturaConIndice() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 4.2, 100, <SinLectura>)));
+
+  public CP10_OperativoFueraDeRango: () ==> ()
+  CP10_OperativoFueraDeRango() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 25.0, 100, <Operativo>)));
+
+  public CP11_SensorNoInstalado: () ==> ()
+  CP11_SensorNoInstalado() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S2, 9.0, 100, <Operativo>)));
+
+  public CP12_LecturaDesordenada: () ==> ()
+  CP12_LecturaDesordenada() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 9.0, 100, <Operativo>));
+    c.RecibirLectura(D1, L(S1, 9.5, 90,  <Operativo>)));
+
+  public CP13_AlertaFalsa: () ==> Tipos`Alerta
+  CP13_AlertaFalsa() ==
+    return mk_Tipos`Alerta(L(S1, 5.0, 100, <Operativo>), D1, CERCADO, <Moderado>, <Pendiente>);
+
+  public CP14_NivelMalClasificado: () ==> Tipos`Alerta
+  CP14_NivelMalClasificado() ==
+    return mk_Tipos`Alerta(L(S1, 13.5, 100, <Operativo>), D1, CERCADO, <Alto>, <Pendiente>);
+
+  public CP15_AtenderSinEmitir: () ==> ()
+  CP15_AtenderSinEmitir() ==
+   (Escenario();
+    c.RecibirLectura(D1, L(S1, 13.5, 100, <Operativo>));
+    c.AtenderAlerta(1));
+
+  public CP16_DispositivoDuplicado: () ==> ()
+  CP16_DispositivoDuplicado() ==
+   (Escenario();
+    c.RegistrarDispositivo(new DispositivoUV(D1, YANAHUARA, {S2})));
+
+end PruebasAlertaUV

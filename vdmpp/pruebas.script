@@ -1,0 +1,26 @@
+print new PruebasAlertaUV().CP01_LecturaExtrema()
+print new PruebasAlertaUV().CP02_LecturaModerada()
+print new PruebasAlertaUV().CP03_EnElUmbral()
+print new PruebasAlertaUV().CP04_BajoElUmbral()
+print new PruebasAlertaUV().CP05_FueraDeRango()
+print new PruebasAlertaUV().CP06_JornadaArequipa()
+print new PruebasAlertaUV().CP07_CicloDeAlerta()
+print new PruebasAlertaUV().CP08_ConsultaPorZona()
+print new PruebasAlertaUV().CP09_SinLecturaConIndice()
+stop
+print new PruebasAlertaUV().CP10_OperativoFueraDeRango()
+stop
+print new PruebasAlertaUV().CP11_SensorNoInstalado()
+stop
+print new PruebasAlertaUV().CP12_LecturaDesordenada()
+stop
+print new PruebasAlertaUV().CP13_AlertaFalsa()
+stop
+print new PruebasAlertaUV().CP14_NivelMalClasificado()
+stop
+print new PruebasAlertaUV().CP15_AtenderSinEmitir()
+stop
+print new PruebasAlertaUV().CP16_DispositivoDuplicado()
+stop
+coverage Tipos.vdmpp DispositivoUV.vdmpp CentralMonitoreo.vdmpp
+quit
