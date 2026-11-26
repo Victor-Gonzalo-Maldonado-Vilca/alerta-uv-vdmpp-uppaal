@@ -1,0 +1,37 @@
+
+Verifying formula 1 at C:/Users/Asus/AppData/Local/Temp/claude/8b2724c34c31efb5/93a226a1-25d3-491a-8dd4-e24680b7c5ea/scratchpad/p2.q:1
+ -- Formula is NOT satisfied.
+ -- Showing witness trace:
+
+State:
+( Sensor.Midiendo Central.esperando Alerta(0).inicio Alerta(1).inicio Alerta(2).inicio Alerta(3).inicio )
+lec_indice=0 lec_senal=0 n=0 hist_ind[0]=0 hist_ind[1]=0 hist_ind[2]=0 hist_ind[3]=0 hist_est[0]=0 hist_est[1]=0 hist_est[2]=0 hist_est[3]=0 total=0 alerta_lect[0]=0 alerta_lect[1]=0 alerta_lect[2]=0 alerta_lect[3]=0 alerta_nivel[0]=0 alerta_nivel[1]=0 alerta_nivel[2]=0 alerta_nivel[3]=0 emitida[0]=0 emitida[1]=0 emitida[2]=0 emitida[3]=0 Sensor.t=0 Alerta(0).x=0 Alerta(1).x=0 Alerta(2).x=0 Alerta(3).x=0
+
+Delay: 5
+
+State:
+( Sensor.Midiendo Central.esperando Alerta(0).inicio Alerta(1).inicio Alerta(2).inicio Alerta(3).inicio )
+lec_indice=0 lec_senal=0 n=0 hist_ind[0]=0 hist_ind[1]=0 hist_ind[2]=0 hist_ind[3]=0 hist_est[0]=0 hist_est[1]=0 hist_est[2]=0 hist_est[3]=0 total=0 alerta_lect[0]=0 alerta_lect[1]=0 alerta_lect[2]=0 alerta_lect[3]=0 alerta_nivel[0]=0 alerta_nivel[1]=0 alerta_nivel[2]=0 alerta_nivel[3]=0 emitida[0]=0 emitida[1]=0 emitida[2]=0 emitida[3]=0 Sensor.t=5 Alerta(0).x=5 Alerta(1).x=5 Alerta(2).x=5 Alerta(3).x=5
+
+Transition:
+  Sensor.Midiendo->Sensor.Enviando { t == PERIODO && n < MAX_LECT, tau, lec_senal := 1 == 1, lec_indice := 1 == 1 ? VALORES[2] : 0, t := 0 }
+
+State:
+( Sensor.Enviando Central.esperando Alerta(0).inicio Alerta(1).inicio Alerta(2).inicio Alerta(3).inicio )
+lec_indice=7 lec_senal=1 n=0 hist_ind[0]=0 hist_ind[1]=0 hist_ind[2]=0 hist_ind[3]=0 hist_est[0]=0 hist_est[1]=0 hist_est[2]=0 hist_est[3]=0 total=0 alerta_lect[0]=0 alerta_lect[1]=0 alerta_lect[2]=0 alerta_lect[3]=0 alerta_nivel[0]=0 alerta_nivel[1]=0 alerta_nivel[2]=0 alerta_nivel[3]=0 emitida[0]=0 emitida[1]=0 emitida[2]=0 emitida[3]=0 Sensor.t=0 Alerta(0).x=5 Alerta(1).x=5 Alerta(2).x=5 Alerta(3).x=5
+
+Transition:
+  Sensor.Enviando->Sensor.Midiendo { 1, leer!, 1 }
+  Central.esperando->Central.operativo { lec_senal && lec_indice >= 0 && lec_indice <= INDICE_MAX, leer?, registrar(OPERATIVO) }
+
+State:
+( Sensor.Midiendo Central.operativo Alerta(0).inicio Alerta(1).inicio Alerta(2).inicio Alerta(3).inicio )
+lec_indice=7 lec_senal=1 n=1 hist_ind[0]=7 hist_ind[1]=0 hist_ind[2]=0 hist_ind[3]=0 hist_est[0]=0 hist_est[1]=0 hist_est[2]=0 hist_est[3]=0 total=0 alerta_lect[0]=0 alerta_lect[1]=0 alerta_lect[2]=0 alerta_lect[3]=0 alerta_nivel[0]=0 alerta_nivel[1]=0 alerta_nivel[2]=0 alerta_nivel[3]=0 emitida[0]=0 emitida[1]=0 emitida[2]=0 emitida[3]=0 Sensor.t=0 Alerta(0).x=5 Alerta(1).x=5 Alerta(2).x=5 Alerta(3).x=5
+
+Transition:
+  Central.operativo->Central.esperando { lec_indice >= 7, crear[total]!, crearAlerta() }
+  Alerta(0).inicio->Alerta(0).Pendiente { 1, crear[id]?, x := 0 }
+
+State:
+( Sensor.Midiendo Central.esperando Alerta(0).Pendiente Alerta(1).inicio Alerta(2).inicio Alerta(3).inicio )
+lec_indice=7 lec_senal=1 n=1 hist_ind[0]=7 hist_ind[1]=0 hist_ind[2]=0 hist_ind[3]=0 hist_est[0]=0 hist_est[1]=0 hist_est[2]=0 hist_est[3]=0 total=1 alerta_lect[0]=0 alerta_lect[1]=0 alerta_lect[2]=0 alerta_lect[3]=0 alerta_nivel[0]=2 alerta_nivel[1]=0 alerta_nivel[2]=0 alerta_nivel[3]=0 emitida[0]=0 emitida[1]=0 emitida[2]=0 emitida[3]=0 Sensor.t=0 Alerta(0).x=0 Alerta(1).x=5 Alerta(2).x=5 Alerta(3).x=5

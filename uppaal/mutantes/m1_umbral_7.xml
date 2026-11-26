@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// =====================================================================
+// Dispositivo IoT de alerta temprana de radiacion UV - Grupo 6
+// Model Checking (UPPAAL 5.0) derivado del modelo VDM++ (Tipos,
+// DispositivoUV y CentralMonitoreo).
+// Comportamiento modelado: recepcion de una lectura UV en la central y
+// ciclo de vida de la alerta que genera (Pendiente -&gt; Emitida -&gt; Atendida).
+// =====================================================================
+
+// ---- Constantes (Tipos`INDICE_MAX, Tipos`UMBRAL_ALERTA) ----
+const int INDICE_MAX    = 20;
+const int UMBRAL_ALERTA = 8;
+
+// Lecturas que procesa el sistema (acota el espacio de estados)
+const int MAX_LECT  = 4;
+// En el peor caso todas las lecturas son de riesgo: una alerta por lectura
+const int N_ALERTAS = MAX_LECT;
+
+// Periodo de muestreo del sensor y plazo maximo para emitir una alerta
+const int PERIODO   = 5;
+const int T_EMITIR  = 2;
+
+// Discretizacion del indice: valores frontera de cada clase de equivalencia
+//  -1 y 21 fuera de rango | 0 y 7 sin riesgo | 8 umbral | 11 extremo | 20 maximo
+const int NV = 7;
+const int VALORES[NV] = {-1, 0, 7, 8, 11, 20, 21};
+
+// ---- Tipos`EstadoSensor ----
+const int OPERATIVO      = 0;
+const int SIN_LECTURA    = 1;
+const int FUERA_DE_RANGO = 2;
+
+// ---- Tipos`NivelRiesgo ----
+const int BAJO = 0;
+const int MODERADO = 1;
+const int ALTO = 2;
+const int MUY_ALTO = 3;
+const int EXTREMO = 4;
+
+typedef int[0, N_ALERTAS-1] id_t;
+typedef int[0, MAX_LECT-1]  lect_t;
+
+// ---- Canales ----
+chan leer;             // el sensor entrega una lectura a la central
+chan crear[N_ALERTAS]; // la central crea la alerta i (A1)
+
+// ---- Lectura en transito (Tipos`LecturaUV) ----
+int  lec_indice = 0;
+bool lec_senal  = false;
+
+// ---- DispositivoUV`historial (instante = posicion en la secuencia) ----
+int[0, MAX_LECT] n = 0;          // len historial
+int hist_ind[MAX_LECT];          // indice de cada lectura
+int hist_est[MAX_LECT];          // estado de cada lectura
+
+// ---- CentralMonitoreo`alertas ----
+int[0, N_ALERTAS] total = 0;     // card dom alertas
+int  alerta_lect[N_ALERTAS];     // lectura que origino la alerta
+int  alerta_nivel[N_ALERTAS];    // nivel de riesgo de la alerta
+bool emitida[N_ALERTAS];         // la alerta paso por Emitida
+
+// Tipos`Clasificar (RF5)
+int clasificar(int i) {
+    if (i &lt; 3)  return BAJO;
+    if (i &lt; 6)  return MODERADO;
+    if (i &lt; 8)  return ALTO;
+    if (i &lt; 11) return MUY_ALTO;
+    return EXTREMO;
+}
+
+// DispositivoUV`RegistrarLectura (RF4)
+void registrar(int estado) {
+    hist_ind[n] = lec_indice;
+    hist_est[n] = estado;
+    n++;
+}
+
+// CentralMonitoreo`RecibirLectura, rama EsRiesgo (RF6, RF7)
+void crearAlerta() {
+    alerta_lect[total]  = n - 1;
+    alerta_nivel[total] = clasificar(lec_indice);
+    total++;
+}</declaration>
+	<template>
+		<name x="5" y="5">Sensor</name>
+		<declaration>// Sensor UV del dispositivo: entrega una lectura cada PERIODO unidades.
+clock t;</declaration>
+		<location id="s0" x="-136" y="0">
+			<name x="-246" y="-30">Midiendo</name>
+			<label kind="invariant" x="-258" y="-10">t &lt;= PERIODO</label>
+		</location>
+		<location id="s1" x="136" y="0">
+			<name x="153" y="-25">Enviando</name>
+			<committed/>
+		</location>
+		<location id="s2" x="-136" y="170">
+			<name x="-115" y="160">Fin</name>
+		</location>
+		<init ref="s0"/>
+		<transition id="st0">
+			<source ref="s0"/>
+			<target ref="s1"/>
+			<label kind="select" x="-102" y="-136">k : int[0, NV-1], s : int[0, 1]</label>
+			<label kind="guard" x="-102" y="-119">t == PERIODO &amp;&amp; n &lt; MAX_LECT</label>
+			<label kind="assignment" x="-102" y="-102">lec_senal = (s == 1),
+lec_indice = (s == 1 ? VALORES[k] : 0), t = 0</label>
+			<nail x="-136" y="-68"/>
+			<nail x="136" y="-68"/>
+		</transition>
+		<transition id="st1">
+			<source ref="s1"/>
+			<target ref="s0"/>
+			<label kind="synchronisation" x="-20" y="-20">leer!</label>
+		</transition>
+		<transition id="st2">
+			<source ref="s0"/>
+			<target ref="s2"/>
+			<label kind="guard" x="-127" y="110">n == MAX_LECT</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Central</name>
+		<declaration>// Grafo PG_B: procesamiento de una lectura en CentralMonitoreo`RecibirLectura.</declaration>
+		<location id="c0" x="0" y="0">
+			<name x="-100" y="14">esperando</name>
+		</location>
+		<location id="c1" x="400" y="-200">
+			<name x="418" y="-232">operativo</name>
+			<committed/>
+		</location>
+		<location id="c2" x="400" y="0">
+			<name x="418" y="-30">fueraDeRango</name>
+			<committed/>
+		</location>
+		<location id="c3" x="400" y="200">
+			<name x="418" y="190">sinLectura</name>
+			<committed/>
+		</location>
+		<init ref="c0"/>
+		<transition id="ct1">
+			<source ref="c0"/>
+			<target ref="c1"/>
+			<label kind="guard" x="40" y="-272">lec_senal &amp;&amp; lec_indice &gt;= 0
+&amp;&amp; lec_indice &lt;= INDICE_MAX</label>
+			<label kind="synchronisation" x="40" y="-238">leer?</label>
+			<label kind="assignment" x="110" y="-238">registrar(OPERATIVO)</label>
+			<nail x="0" y="-200"/>
+		</transition>
+		<transition id="ct2">
+			<source ref="c0"/>
+			<target ref="c2"/>
+			<label kind="guard" x="170" y="-75">lec_senal &amp;&amp; (lec_indice &lt; 0
+|| lec_indice &gt; INDICE_MAX)</label>
+			<label kind="synchronisation" x="170" y="-41">leer?</label>
+			<label kind="assignment" x="170" y="-24">registrar(FUERA_DE_RANGO)</label>
+		</transition>
+		<transition id="ct3">
+			<source ref="c0"/>
+			<target ref="c3"/>
+			<label kind="guard" x="40" y="208">!lec_senal &amp;&amp; lec_indice == 0</label>
+			<label kind="synchronisation" x="40" y="225">leer?</label>
+			<label kind="assignment" x="110" y="225">registrar(SIN_LECTURA)</label>
+			<nail x="0" y="200"/>
+		</transition>
+		<transition id="ct4">
+			<source ref="c1"/>
+			<target ref="c0"/>
+			<label kind="guard" x="262" y="-114">lec_indice &lt; 7</label>
+		</transition>
+		<transition id="ct5">
+			<source ref="c1"/>
+			<target ref="c0"/>
+			<label kind="guard" x="40" y="-380">lec_indice &gt;= 7</label>
+			<label kind="synchronisation" x="40" y="-363">crear[total]!</label>
+			<label kind="assignment" x="180" y="-363">crearAlerta()</label>
+			<nail x="400" y="-330"/>
+			<nail x="-80" y="-330"/>
+			<nail x="-80" y="0"/>
+		</transition>
+		<transition id="ct6">
+			<source ref="c2"/>
+			<target ref="c0"/>
+			<nail x="370" y="45"/>
+			<nail x="30" y="45"/>
+		</transition>
+		<transition id="ct7">
+			<source ref="c3"/>
+			<target ref="c0"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Alerta</name>
+		<parameter>const id_t id</parameter>
+		<declaration>// Grafo PG_A: ciclo de vida de una alerta (Tipos`EstadoAlerta).
+clock x;</declaration>
+		<location id="a0" x="0" y="0">
+			<name x="-25" y="-38">inicio</name>
+		</location>
+		<location id="a1" x="230" y="0">
+			<name x="200" y="-38">Pendiente</name>
+			<label kind="invariant" x="250" y="-8">x &lt;= T_EMITIR</label>
+		</location>
+		<location id="a2" x="230" y="140">
+			<name x="250" y="132">Emitida</name>
+		</location>
+		<location id="a3" x="0" y="140">
+			<name x="-30" y="158">Atendida</name>
+		</location>
+		<init ref="a0"/>
+		<transition id="at1">
+			<source ref="a0"/>
+			<target ref="a1"/>
+			<label kind="synchronisation" x="60" y="-38">crear[id]?</label>
+			<label kind="assignment" x="60" y="-21">x = 0</label>
+		</transition>
+		<transition id="at2">
+			<source ref="a1"/>
+			<target ref="a2"/>
+			<label kind="assignment" x="238" y="60">emitida[id] = true</label>
+		</transition>
+		<transition id="at3">
+			<source ref="a2"/>
+			<target ref="a3"/>
+			<label kind="guard" x="70" y="118">emitida[id]</label>
+		</transition>
+	</template>
+	<system>// Un dispositivo con su sensor, la central y N_ALERTAS alertas posibles.
+system Sensor, Central, Alerta;
+</system>
+	<queries>
+		<query>
+			<formula>A[] Central.operativo imply (lec_indice &gt;= 0 &amp;&amp; lec_indice &lt;= INDICE_MAX)</formula>
+			<comment>P1 (RF3, invariante de LecturaUV): toda lectura aceptada como Operativo esta en [0, INDICE_MAX].</comment>
+		</query>
+		<query>
+			<formula>A[] forall (i : id_t) (!Alerta(i).inicio imply (hist_est[alerta_lect[i]] == OPERATIVO &amp;&amp; hist_ind[alerta_lect[i]] &gt;= UMBRAL_ALERTA &amp;&amp; alerta_nivel[i] == clasificar(hist_ind[alerta_lect[i]]) &amp;&amp; alerta_nivel[i] &gt;= MUY_ALTO))</formula>
+			<comment>P2 (RF5 y RF6, seguridad): ninguna alerta existe sin una lectura Operativo con indice &gt;= UMBRAL_ALERTA, y su nivel coincide con Clasificar.</comment>
+		</query>
+		<query>
+			<formula>A[] Central.esperando imply forall (k : lect_t) ((k &lt; n &amp;&amp; hist_est[k] == OPERATIVO &amp;&amp; hist_ind[k] &gt;= UMBRAL_ALERTA) imply exists (i : id_t) (!Alerta(i).inicio &amp;&amp; alerta_lect[i] == k))</formula>
+			<comment>P3 (RF7, sin omisiones): cada vez que la central queda esperando, toda lectura de riesgo registrada tiene su alerta.</comment>
+		</query>
+		<query>
+			<formula>A[] forall (i : id_t) (Alerta(i).Atendida imply emitida[i])</formula>
+			<comment>P4 (RF8, orden del ciclo): ninguna alerta llega a Atendida sin haber pasado por Emitida.</comment>
+		</query>
+		<query>
+			<formula>A[] forall (i : id_t) (Alerta(i).Pendiente imply Alerta(i).x &lt;= T_EMITIR)</formula>
+			<comment>P5 (RF8, plazo): una alerta nunca permanece Pendiente mas de T_EMITIR unidades de tiempo.</comment>
+		</query>
+		<query>
+			<formula>A[] deadlock imply (n == MAX_LECT &amp;&amp; Sensor.Fin &amp;&amp; Central.esperando &amp;&amp; forall (i : id_t) (Alerta(i).inicio || Alerta(i).Atendida))</formula>
+			<comment>P6 (ausencia de bloqueos): el sistema solo se detiene cuando proceso todas las lecturas y no deja alertas a medias.</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Alerta(0).Atendida</formula>
+			<comment>P7 (alcanzabilidad): existe una ejecucion en la que una alerta completa su ciclo hasta Atendida.</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; total == N_ALERTAS</formula>
+			<comment>P8 (alcanzabilidad): es posible que todas las lecturas sean de riesgo y se creen N_ALERTAS alertas.</comment>
+		</query>
+		<query>
+			<formula>E[] forall (i : id_t) Alerta(i).inicio</formula>
+			<comment>P9 (sin falsas alarmas): existe una ejecucion completa en la que nunca se crea una alerta.</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; exists (i : id_t) (!Alerta(i).inicio &amp;&amp; hist_est[alerta_lect[i]] == FUERA_DE_RANGO)</formula>
+			<comment>P10 (debe ser FALSA): no es alcanzable una alerta originada por una lectura fuera de rango.</comment>
+		</query>
+		<query>
+			<formula>Alerta(0).Pendiente --&gt; Alerta(0).Emitida</formula>
+			<comment>P11 (vivacidad): toda alerta Pendiente termina siendo Emitida.</comment>
+		</query>
+	</queries>
+</nta>
