@@ -1,0 +1,41 @@
+class DispositivoUV
+
+instance variables
+  id        : Tipos`DispositivoId;
+  zona      : Tipos`Zona;
+  sensores  : set of Tipos`SensorId;
+  historial : seq of Tipos`LecturaUV := [];
+  -- RF2: al menos un sensor; RF4: lecturas de sensores propios y en orden
+  inv card sensores >= 1 and
+      (forall l in set elems historial & l.sensor in set sensores) and
+      (forall i in set inds historial &
+         i > 1 => historial(i-1).instante < historial(i).instante);
+
+operations
+  public DispositivoUV: Tipos`DispositivoId * Tipos`Zona * set of Tipos`SensorId ==> DispositivoUV
+  DispositivoUV(pid, pzona, psens) ==
+    atomic (id := pid; zona := pzona; sensores := psens)
+  pre card psens >= 1;
+
+  -- RF4
+  public RegistrarLectura: Tipos`LecturaUV ==> ()
+  RegistrarLectura(l) ==
+    historial := historial ^ [l]
+  pre l.sensor in set sensores and
+      (historial <> [] => historial(len historial).instante < l.instante)
+  post historial = historial~ ^ [l];
+
+  public pure UltimaLectura: () ==> Tipos`LecturaUV
+  UltimaLectura() == return historial(len historial)
+  pre historial <> [];
+
+  public pure GetId: () ==> Tipos`DispositivoId
+  GetId() == return id;
+
+  public pure GetZona: () ==> Tipos`Zona
+  GetZona() == return zona;
+
+  public pure GetHistorial: () ==> seq of Tipos`LecturaUV
+  GetHistorial() == return historial;
+
+end DispositivoUV
