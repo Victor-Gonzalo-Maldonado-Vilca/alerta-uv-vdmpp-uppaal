@@ -1,0 +1,94 @@
+class CentralMonitoreo
+
+instance variables
+  dispositivos : map Tipos`DispositivoId to DispositivoUV := {|->};
+  alertas      : map Tipos`AlertaId to Tipos`Alerta := {|->};
+
+  -- I1 (RF1): la clave del mapeo coincide con el id del dispositivo
+  inv forall d in set dom dispositivos & dispositivos(d).GetId() = d;
+  -- I5: los identificadores de alerta son consecutivos 1..n
+  inv dom alertas = {1, ..., card dom alertas};
+  -- I6 (seguridad): toda alerta proviene de una lectura registrada
+  --    en un dispositivo existente y apunta a la zona de ese dispositivo
+  inv forall a in set rng alertas &
+        a.dispositivo in set dom dispositivos and
+        a.zona = dispositivos(a.dispositivo).GetZona() and
+        a.lectura in set elems dispositivos(a.dispositivo).GetHistorial();
+  -- La propiedad «sin omisiones» (RF7) no se escribe como invariante:
+  -- el intérprete la evalúa también en el estado intermedio de
+  -- RecibirLectura (lectura ya registrada, alerta aún no creada) y falla.
+  -- Se garantiza con la postcondición de RecibirLectura y se comprueba
+  -- con la consulta SinOmisiones.
+
+operations
+  -- RF1
+  public RegistrarDispositivo: DispositivoUV ==> ()
+  RegistrarDispositivo(d) ==
+    dispositivos := dispositivos munion {d.GetId() |-> d}
+  pre d.GetId() not in set dom dispositivos
+  post d.GetId() in set dom dispositivos and alertas = alertas~;
+
+  -- RF4, RF6 y RF7: registra la lectura y, si es de riesgo, crea la alerta
+  public RecibirLectura: Tipos`DispositivoId * Tipos`LecturaUV ==> ()
+  RecibirLectura(did, l) ==
+   (dispositivos(did).RegistrarLectura(l);
+    if Tipos`EsRiesgo(l) then
+     (dcl z : Tipos`Zona := dispositivos(did).GetZona();
+      alertas := alertas munion
+        {card dom alertas + 1 |->
+           mk_Tipos`Alerta(l, did, z, Tipos`Clasificar(l.indice), <Pendiente>)}))
+  pre did in set dom dispositivos
+  post (Tipos`EsRiesgo(l) =>
+          card dom alertas = card dom alertas~ + 1 and
+          exists a in set rng alertas & a.lectura = l and a.dispositivo = did) and
+       (not Tipos`EsRiesgo(l) => alertas = alertas~);
+
+  -- RF8: Pendiente -> Emitida
+  public EmitirAlerta: Tipos`AlertaId ==> ()
+  EmitirAlerta(a) ==
+    alertas(a) := mu(alertas(a), estado |-> <Emitida>)
+  pre a in set dom alertas and alertas(a).estado = <Pendiente>
+  post alertas(a).estado = <Emitida> and
+       {a} <-: alertas = {a} <-: alertas~;
+
+  -- RF8: Emitida -> Atendida
+  public AtenderAlerta: Tipos`AlertaId ==> ()
+  AtenderAlerta(a) ==
+    alertas(a) := mu(alertas(a), estado |-> <Atendida>)
+  pre a in set dom alertas and alertas(a).estado = <Emitida>
+  post alertas(a).estado = <Atendida> and
+       {a} <-: alertas = {a} <-: alertas~;
+
+  -- Consultas
+  public pure DispositivosEnZona: Tipos`Zona ==> set of Tipos`DispositivoId
+  DispositivosEnZona(z) ==
+    return {d | d in set dom dispositivos & dispositivos(d).GetZona() = z};
+
+  public pure AlertasPendientes: () ==> set of Tipos`AlertaId
+  AlertasPendientes() ==
+    return {a | a in set dom alertas & alertas(a).estado = <Pendiente>};
+
+  public pure NivelAlerta: Tipos`AlertaId ==> Tipos`NivelRiesgo
+  NivelAlerta(a) == return alertas(a).nivel
+  pre a in set dom alertas;
+
+  public pure EstadoDeAlerta: Tipos`AlertaId ==> Tipos`EstadoAlerta
+  EstadoDeAlerta(a) == return alertas(a).estado
+  pre a in set dom alertas;
+
+  public pure IndiceActual: Tipos`DispositivoId ==> real
+  IndiceActual(did) == return dispositivos(did).UltimaLectura().indice
+  pre did in set dom dispositivos;
+
+  public pure TotalAlertas: () ==> nat
+  TotalAlertas() == return card dom alertas;
+
+  -- RF7: toda lectura de riesgo registrada tiene su alerta
+  public pure SinOmisiones: () ==> bool
+  SinOmisiones() ==
+    return forall d in set dom dispositivos &
+             forall l in set elems dispositivos(d).GetHistorial() &
+               Tipos`EsRiesgo(l) =>
+                 exists a in set rng alertas & a.lectura = l and a.dispositivo = d;
+
+end CentralMonitoreo
