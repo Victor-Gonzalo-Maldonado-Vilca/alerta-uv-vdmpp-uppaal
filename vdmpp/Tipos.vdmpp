@@ -1,0 +1,53 @@
+class Tipos
+
+values
+  public INDICE_MAX    : real = 20;   -- rango físico del sensor [0, 20]
+  public UMBRAL_ALERTA : real = 8;    -- inicio de la categoría «muy alto» (OMS)
+
+types
+  public DispositivoId = token;
+  public SensorId      = token;
+  public Zona          = token;
+  public AlertaId      = nat1;
+
+  public EstadoSensor = <Operativo> | <SinLectura> | <FueraDeRango>;
+  public NivelRiesgo  = <Bajo> | <Moderado> | <Alto> | <MuyAlto> | <Extremo>;
+  public EstadoAlerta = <Pendiente> | <Emitida> | <Atendida>;
+
+  -- RF3: el estado de la lectura debe ser coherente con su índice
+  public LecturaUV ::
+    sensor   : SensorId
+    indice   : real
+    instante : nat
+    estado   : EstadoSensor
+  inv mk_LecturaUV(-, i, -, e) ==
+    (e = <Operativo>    => 0 <= i and i <= INDICE_MAX) and
+    (e = <FueraDeRango> => i < 0 or i > INDICE_MAX) and
+    (e = <SinLectura>   => i = 0);
+
+  -- RF6 (seguridad): no puede construirse una alerta falsa
+  public Alerta ::
+    lectura     : LecturaUV
+    dispositivo : DispositivoId
+    zona        : Zona
+    nivel       : NivelRiesgo
+    estado      : EstadoAlerta
+  inv mk_Alerta(l, -, -, n, -) ==
+    EsRiesgo(l) and n = Clasificar(l.indice);
+
+functions
+  -- RF5: cada índice cae en uno y solo uno de los niveles de la OMS
+  public Clasificar: real -> NivelRiesgo
+  Clasificar(i) ==
+    if i < 3 then <Bajo>
+    elseif i < 6 then <Moderado>
+    elseif i < 8 then <Alto>
+    elseif i < 11 then <MuyAlto>
+    else <Extremo>;
+
+  -- Una lectura justifica una alerta solo si es válida y alcanza el umbral
+  public EsRiesgo: LecturaUV -> bool
+  EsRiesgo(l) ==
+    l.estado = <Operativo> and l.indice >= UMBRAL_ALERTA;
+
+end Tipos
