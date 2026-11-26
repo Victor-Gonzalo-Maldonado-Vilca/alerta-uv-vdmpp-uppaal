@@ -28,6 +28,7 @@ En Arequipa el índice UV llega a la categoría «extremo» casi a diario en ver
 │   ├── propiedades.q, verificar.bat, salida_*.txt
 │   └── mutantes/                    modelos con errores y sus contraejemplos
 └── docs/
+    ├── Grupo06_Alerta_UV_Articulo_y_Presentacion.pdf   entrega final
     ├── Articulo_IEEE_Alerta_UV_Grupo06.pdf
     └── figuras/                     diagramas UML y autómatas
 ```
@@ -80,6 +81,7 @@ También se puede abrir `uppaal/alerta_uv.xml` en UPPAAL e ir a la pestaña **Ve
 
 ## Enlaces
 
+- Entrega final (artículo + diapositivas): [docs/Grupo06_Alerta_UV_Articulo_y_Presentacion.pdf](docs/Grupo06_Alerta_UV_Articulo_y_Presentacion.pdf)
 - Artículo: [docs/Articulo_IEEE_Alerta_UV_Grupo06.pdf](docs/Articulo_IEEE_Alerta_UV_Grupo06.pdf)
 - Video de presentación: [carpeta de Google Drive](https://drive.google.com/drive/folders/1vr3s796qSmJb97FL0z5ge5k5AGx-0rbo?usp=sharing)
 - Repositorio: https://github.com/Victor-Gonzalo-Maldonado-Vilca/alerta-uv-vdmpp-uppaal
